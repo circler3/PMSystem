@@ -17,6 +17,7 @@ namespace PMServer
             Common.SessionDict = new System.Collections.Concurrent.ConcurrentDictionary<string, AppSession>();
             var appServer = new AppServer();
             appServer.NewSessionConnected += AppServer_NewSessionConnected; ;
+            appServer.SessionClosed += AppServer_SessionClosed;
             //使用命令简化模型
             //appServer.NewRequestReceived += AppServer_NewRequestReceived;
             //Setup the appServer
@@ -52,6 +53,11 @@ namespace PMServer
             Console.ReadKey();
         }
 
+        private static void AppServer_SessionClosed(AppSession session, CloseReason value)
+        {
+            Common.SessionDict[session.RemoteEndPoint.Address.ToString()] = null;
+        }
+
         private static void AppServer_NewRequestReceived(AppSession session, StringRequestInfo requestInfo)
         {
             Console.WriteLine(requestInfo.Body);
@@ -61,6 +67,7 @@ namespace PMServer
         private static void AppServer_NewSessionConnected(AppSession session)
         {
             session.TrySend("WELCOME!");
+            Common.SessionDict[session.RemoteEndPoint.Address.ToString()] = session;
         }
     }
 }

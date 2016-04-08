@@ -11,5 +11,6 @@ namespace PMServer
         public AppSession Session { get; set; }
         public string Username { get; set; }
         public DateTime LastMessageTime { get; set; }
+        public List<WorkItem> WorkItems { get; set; }
     }
 }
