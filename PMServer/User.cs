@@ -12,5 +12,6 @@ namespace PMServer
         public string Username { get; set; }
         public DateTime LastMessageTime { get; set; }
         public List<WorkItem> WorkItems { get; set; }
+        public bool Previleged { get; set; }
     }
 }

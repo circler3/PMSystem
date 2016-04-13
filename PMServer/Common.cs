@@ -8,6 +8,6 @@ namespace PMServer
 {
     class Common
     {
-        public static ConcurrentDictionary<string, AppSession> SessionDict { get; set; }
+        public static ConcurrentDictionary<string, User> SessionDict { get; set; }
     }
 }

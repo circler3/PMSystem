@@ -7,6 +7,7 @@ namespace PMServer
 {
     class WorkItem
     {
+        public string Guid { get; set; }
         public string Name { get; set; }
         public DateTime Deadline { get; set; }
         public int Percentage { get; set; }

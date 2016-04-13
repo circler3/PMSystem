@@ -14,7 +14,24 @@ namespace PMServer
         static void Main(string[] args)
         {
             //Initialize the common class
-            Common.SessionDict = new System.Collections.Concurrent.ConcurrentDictionary<string, AppSession>();
+            Common.SessionDict = new System.Collections.Concurrent.ConcurrentDictionary<string, User>();
+            Ini iniparser = new Ini(@"Config/user.ini");
+            foreach (var n in iniparser.GetKeys("PrevilegedUser"))
+            {
+                Common.SessionDict[n] = new User()
+                {
+                    Username = iniparser.GetValue(n, "PrevilegedUser"),
+                    Previleged = true,
+                };
+            }
+            foreach (var n in iniparser.GetKeys("NormalUser"))
+            {
+                Common.SessionDict[n] = new User()
+                {
+                    Username = iniparser.GetValue(n, "NormalUser"),
+                    Previleged = false,
+                };
+            }
             var appServer = new AppServer();
             appServer.NewSessionConnected += AppServer_NewSessionConnected; ;
             appServer.SessionClosed += AppServer_SessionClosed;
@@ -61,13 +78,21 @@ namespace PMServer
         private static void AppServer_NewRequestReceived(AppSession session, StringRequestInfo requestInfo)
         {
             Console.WriteLine(requestInfo.Body);
-            session.TrySend(requestInfo.Body);
+            session.TrySend(requestInfo.ToString());
         }
 
         private static void AppServer_NewSessionConnected(AppSession session)
         {
             session.TrySend("WELCOME!");
-            Common.SessionDict[session.RemoteEndPoint.Address.ToString()] = session;
+            if (Common.SessionDict.ContainsKey(session.RemoteEndPoint.Address.ToString()))
+            {
+                Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Session = session;
+            }
+        }
+
+        public static void SendTo()
+        {
+
         }
     }
 }
