@@ -47,7 +47,7 @@ public class Ini
 
             if (line.StartsWith(";") || string.IsNullOrWhiteSpace(line))
             {
-                currentSection.Add(";" + l.idx.ToString(), line);
+                //currentSection.Add(";" + l.idx.ToString(), line);
                 continue;
             }
 
@@ -62,7 +62,7 @@ public class Ini
             if (idx == -1)
                 currentSection[line] = "";
             else
-                currentSection[line.Substring(0, idx)] = line.Substring(idx + 1);
+                currentSection[line.Substring(0, idx).Trim()] = line.Substring(idx + 1).Trim() ;
         }
     }
 

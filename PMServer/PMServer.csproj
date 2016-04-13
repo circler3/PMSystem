@@ -84,6 +84,7 @@
     <None Include="Config\users.Designer.ini" />
     <None Include="Config\users.ini">
       <SubType>Component</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="supersocket.cmd" />

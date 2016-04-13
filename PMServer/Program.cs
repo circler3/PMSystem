@@ -15,7 +15,7 @@ namespace PMServer
         {
             //Initialize the common class
             Common.SessionDict = new System.Collections.Concurrent.ConcurrentDictionary<string, User>();
-            Ini iniparser = new Ini(@"Config/user.ini");
+            Ini iniparser = new Ini(@"Config/users.ini");
             foreach (var n in iniparser.GetKeys("PrevilegedUser"))
             {
                 Common.SessionDict[n] = new User()
@@ -38,7 +38,7 @@ namespace PMServer
             //使用命令简化模型
             //appServer.NewRequestReceived += AppServer_NewRequestReceived;
             //Setup the appServer
-            ServerConfig sc = new ServerConfig() { Port = 2020, TextEncoding = "gb2312" };
+            ServerConfig sc = new ServerConfig() { Port = 2020, TextEncoding = "gb2312", KeepAliveInterval= 10, ClearIdleSession = false };
             if (!appServer.Setup(sc)) //Setup with listening port
             {
                 Console.WriteLine("Failed to setup!");
@@ -72,7 +72,7 @@ namespace PMServer
 
         private static void AppServer_SessionClosed(AppSession session, CloseReason value)
         {
-            Common.SessionDict[session.RemoteEndPoint.Address.ToString()] = null;
+            Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Session = null;
         }
 
         private static void AppServer_NewRequestReceived(AppSession session, StringRequestInfo requestInfo)
@@ -83,16 +83,39 @@ namespace PMServer
 
         private static void AppServer_NewSessionConnected(AppSession session)
         {
-            session.TrySend("WELCOME!");
-            if (Common.SessionDict.ContainsKey(session.RemoteEndPoint.Address.ToString()))
+            //session.TrySend("WELCOME!");
+            Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Session = session;
+            //this is for previledged user who is connecting the server the first time.
+            if (Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Previleged)
             {
-                Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Session = session;
+                var insp = from c in Common.SessionDict.Values
+                           where c.WorkItems != null
+                           select c;
+                foreach (var n in insp)
+                {
+                    foreach (var xn in n.WorkItems)
+                    {
+                        var mes = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\r\n", "Update", xn.Guid, xn.Name, xn.Description,
+                            xn.Percentage, xn.Deadline.ToShortDateString(), xn.Priority, n.Username);
+                        session.TrySend(mes);
+                    }
+                }
             }
         }
 
-        public static void SendTo()
+        public static void SendToPrevileged(string mes)
         {
-
+            var x = from c in Common.SessionDict
+                    where c.Value.Previleged == true
+                    select c;
+            foreach (var n in x)
+            {
+                if (n.Value.Session == null)
+                {
+                    return;
+                }
+                n.Value.Session.TrySend(mes);
+            }
         }
     }
 }

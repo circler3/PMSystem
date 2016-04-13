@@ -8,6 +8,10 @@ namespace PMServer
 {
     class User
     {
+        public User()
+        {
+            WorkItems = new List<WorkItem>();
+        }
         public AppSession Session { get; set; }
         public string Username { get; set; }
         public DateTime LastMessageTime { get; set; }

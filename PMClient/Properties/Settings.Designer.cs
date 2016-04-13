@@ -25,7 +25,7 @@ namespace PMClient.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.56.102")]
         public string ServerIP {
             get {
                 return ((string)(this["ServerIP"]));

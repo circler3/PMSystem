@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace PMClient.ViewModel
 {
@@ -55,7 +56,7 @@ namespace PMClient.ViewModel
                     ?? (_addCommand = new RelayCommand(
                     () =>
                     {
-                        WorkItems.Add(new WorkItemViewModel() { Name = "<输入标题>", Description = "<输入描述>"});
+                        WorkItems.Add(new WorkItemViewModel() { Name = "<输入标题>", Description = "<输入描述>" });
                     }));
             }
         }
@@ -77,7 +78,7 @@ namespace PMClient.ViewModel
         private void UpdateWorkItem(object o)
         {
             WorkItemViewModel w = (WorkItemViewModel)o;
-            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Update", w.Guid, w.Name, w.Description, w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
+            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Update", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
             Send(mes);
         }
 
@@ -98,7 +99,7 @@ namespace PMClient.ViewModel
         private void DeleteWorkItem(object parameter)
         {
             WorkItemViewModel w = (WorkItemViewModel)parameter;
-            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name, w.Description, w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
+            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
             Send(mes);
             WorkItems.Remove(w);
         }
@@ -142,7 +143,7 @@ namespace PMClient.ViewModel
 
                     WelcomeTitle = item.Title;
                 });
-            _workItems.Add(new WorkItemViewModel() { Name = "工作标题", Percentage = 30, Description= "完成一定精度的任务完成一定精度的任务完成一定精度的任务" });
+            _workItems.Add(new WorkItemViewModel() { Name = "工作标题", Percentage = 30, Description = "完成一定精度的任务完成一定精度的任务完成一定精度的任务" });
             _workItems.Add(new WorkItemViewModel() { Name = "B work item", Percentage = 40 });
 
             tcpClient = new TcpClient();
@@ -159,8 +160,8 @@ namespace PMClient.ViewModel
 
         public void Send(string message)
         {
-            byte[] data = System.Text.Encoding.GetEncoding("gb2312").GetBytes(message);
-            if(stream.CanWrite)
+            byte[] data = Encoding.GetEncoding("gb2312").GetBytes(message);
+            if (stream.CanWrite)
             {
                 stream.Write(data, 0, data.Length);
             }
@@ -172,21 +173,56 @@ namespace PMClient.ViewModel
             {
                 if (stream.CanRead)
                 {
-                    byte[] readBuffer = new byte[1024];
-                    //stream.BeginRead(readBuffer, 0, readBuffer.Length, new AsyncCallback((x) => { }), stream);
-                    int count = stream.Read(readBuffer, 0, readBuffer.Length);
-                    ProcessMessage(readBuffer, count);
-                }
+                    try
+                    {
+                        byte[] readBuffer = new byte[1024];
+                        //stream.BeginRead(readBuffer, 0, readBuffer.Length, new AsyncCallback((x) => { }), stream);
+                        int count = stream.Read(readBuffer, 0, readBuffer.Length);
+                        ProcessMessage(readBuffer, count);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
+                }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
             }
 
         }
 
         private void ProcessMessage(byte[] buffer, int count)
         {
-            string message = System.Text.Encoding.GetEncoding("gb2312").GetString(buffer, 0, count);
-            if (message.StartsWith("Assign"))
+            string message = Encoding.GetEncoding("gb2312").GetString(buffer, 0, count);
+            if (message.StartsWith("Update"))
             {
-
+                string[] mesParts = message.Split(' ');
+                //var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
+                var insp = (from c in WorkItems
+                            where c.Guid == mesParts[1]
+                            select c).FirstOrDefault();
+                if (insp == null)
+                {
+                    WorkItemViewModel item = new WorkItemViewModel
+                    {
+                        Guid = mesParts[1],
+                        Name = mesParts[2].Replace("&nbsp;", " "),
+                        Description = mesParts[3].Replace("&nbsp;", " "),
+                        Percentage = Convert.ToInt32(mesParts[4]),
+                        Deadline = Convert.ToDateTime(mesParts[5]),
+                        Priority = Convert.ToInt32(mesParts[6]),
+                        Username = mesParts[7]
+                    };
+                    WorkItems.Add(item);
+                }
+                else
+                {
+                    insp.Name = mesParts[2].Replace("&nbsp;", " ");
+                    insp.Description = mesParts[3].Replace("&nbsp;", " ");
+                    insp.Percentage = Convert.ToInt32(mesParts[4]);
+                    insp.Deadline = Convert.ToDateTime(mesParts[5]);
+                    insp.Priority = Convert.ToInt32(mesParts[6]);
+                    insp.Username = mesParts[7];
+                }
             }
         }
 
@@ -197,7 +233,7 @@ namespace PMClient.ViewModel
             {
                 stream.Close();
             }
-            if(tcpClient!=null)
+            if (tcpClient != null)
             {
                 tcpClient.Close();
             }
