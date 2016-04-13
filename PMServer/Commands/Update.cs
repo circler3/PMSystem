@@ -28,7 +28,7 @@ namespace PMServer.Commands
             workItem.Deadline = Convert.ToDateTime(requestInfo.Parameters[4]);
             workItem.Priority = Convert.ToInt32(requestInfo.Parameters[5]);
             Console.WriteLine(requestInfo.Key + " " + requestInfo.Body);
-            Program.SendToPrevileged(requestInfo.Key + " " + requestInfo.Body);
+            Program.SendToPrevileged(requestInfo.Key + " " + requestInfo.Body + " " + Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username);
         }
     }
 }

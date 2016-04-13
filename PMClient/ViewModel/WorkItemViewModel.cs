@@ -9,7 +9,7 @@ namespace PMClient.ViewModel
     /// See http://www.galasoft.ch/mvvm
     /// </para>
     /// </summary>
-    public class WorkItemViewModel : ViewModelBase
+    public class WorkItemViewModel : ViewModelBase, IEquatable<WorkItemViewModel>
     {
         /// <summary>
         /// Initializes a new instance of the WorkItemsViewModel class.
@@ -137,5 +137,17 @@ namespace PMClient.ViewModel
         }
 
         public int Priority { get; set; }
+
+        public bool Equals(WorkItemViewModel other)
+        {
+            if (this.Guid == other.Guid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
