@@ -25,7 +25,7 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Button  HorizontalContentAlignment="Center" Grid.Column="0">设置</Button>
-                <Button  Grid.Column="1">新建任务</Button>
+                <Button  Grid.Column="1" Command="{Binding AddCommand}">新建任务</Button>
             </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding WorkItems}">

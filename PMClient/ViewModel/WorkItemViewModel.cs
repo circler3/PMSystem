@@ -16,8 +16,10 @@ namespace PMClient.ViewModel
         /// </summary>
         public WorkItemViewModel()
         {
-
+            Guid = System.Guid.NewGuid().ToString();
         }
+
+        public string Guid { get; set; }
 
         /// <summary>
         /// The <see cref="Name" /> property's name.
@@ -47,7 +49,7 @@ namespace PMClient.ViewModel
         /// </summary>
         public const string DeadlinePropertyName = "Deadline";
 
-        private DateTime _deadline = DateTime.Now;
+        private DateTime _deadline = DateTime.Today;
 
         /// <summary>
         /// Gets the WelcomeTitle property.
@@ -108,6 +110,29 @@ namespace PMClient.ViewModel
             set
             {
                 Set("Description", ref _description, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="Username" /> property's name.
+        /// </summary>
+        public const string UsernamePropertyName = "Username";
+
+        private string _username = "自己";
+
+        /// <summary>
+        /// Gets the WelcomeTitle property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string Username
+        {
+            get
+            {
+                return _username;
+            }
+            set
+            {
+                Set("Username", ref _username, value);
             }
         }
 
