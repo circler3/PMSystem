@@ -38,7 +38,7 @@ namespace PMServer
             //使用命令简化模型
             //appServer.NewRequestReceived += AppServer_NewRequestReceived;
             //Setup the appServer
-            ServerConfig sc = new ServerConfig() { Port = 2020, TextEncoding = "gb2312", KeepAliveInterval= 10, ClearIdleSession = false };
+            ServerConfig sc = new ServerConfig() { Port = 2020, TextEncoding = "gb2312", KeepAliveInterval = 10, ClearIdleSession = false };
             if (!appServer.Setup(sc)) //Setup with listening port
             {
                 Console.WriteLine("Failed to setup!");
@@ -85,9 +85,19 @@ namespace PMServer
         {
             //session.TrySend("WELCOME!");
             Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Session = session;
+
             //this is for previledged user who is connecting the server the first time.
             if (Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Previleged)
             {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in Common.SessionDict)
+                {
+                    sb.Append(item.Key);
+                    sb.Append(" ");
+                    sb.Append(item.Value);
+                }
+                session.TrySend(string.Format("{0} {1}\r\n", "Userlist", sb));
+                session.TrySend(string.Format("{0} {1}\r\n", "Token", "Previleged"));
                 var insp = from c in Common.SessionDict.Values
                            where c.WorkItems != null
                            select c;
@@ -100,6 +110,12 @@ namespace PMServer
                         session.TrySend(mes);
                     }
                 }
+            }
+            else
+            {
+
+                session.TrySend(string.Format("{0} {1} {2}\r\n", "Userlist", session.RemoteEndPoint.Address.ToString(), 
+                    Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username));
             }
         }
 

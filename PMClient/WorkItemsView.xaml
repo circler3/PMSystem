@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         xmlns:local="clr-namespace:PMClient" x:Class="PMClient.WorkItemsView"
+    xmlns:localmodel="clr-namespace:PMClient.Model"
         mc:Ignorable="d ignore" d:DesignHeight="9" MinHeight="50">
-
+    <UserControl.Resources>
+        <localmodel:UserlistValueConverter x:Key="UserValueConverter"/>
+    </UserControl.Resources>
     <StackPanel DataContext="{Binding}">
         <Separator Margin="5"/>
         <Grid Grid.Row="0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
@@ -42,7 +45,8 @@
                 <TextBlock Text="截止日期:" VerticalAlignment="Center" Margin="5"/>
                 <DatePicker SelectedDate="{Binding Deadline}"/>
             </DockPanel>
-            <TextBlock Grid.Column="1" Text="{Binding Username}" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5"/>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5" IsReadOnly="True" ItemsSource="{Binding Mode=OneWay, Path=Main.UserDict, Converter={StaticResource UserValueConverter}}" DataContext="{Binding Source={StaticResource Locator}}">
+            </ComboBox>
         </Grid>
     </StackPanel>
 </UserControl>

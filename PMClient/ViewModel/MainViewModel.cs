@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace PMClient.ViewModel
 {
@@ -40,6 +41,51 @@ namespace PMClient.ViewModel
             set
             {
                 Set("WelcomeTitle", ref _welcomeTitle, value);
+            }
+        }
+        /// <summary>
+        /// The <see cref="UserDict" /> property's name.
+        /// </summary>
+        public const string UserDictPropertyName = "UserDict";
+
+        private Dictionary<string, string> _userDict = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gets the WelcomeTitle property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Dictionary<string, string> UserDict
+        {
+            get
+            {
+                return _userDict;
+            }
+            set
+            {
+                Set("UserDict", ref _userDict, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="Previleged" /> property's name.
+        /// </summary>
+        public const string PrevilegedPropertyName = "Previleged";
+
+        private bool _previleged = false;
+
+        /// <summary>
+        /// Gets the WelcomeTitle property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool Previleged
+        {
+            get
+            {
+                return _previleged;
+            }
+            set
+            {
+                Set("Previleged", ref _previleged, value);
             }
         }
 
@@ -207,9 +253,9 @@ namespace PMClient.ViewModel
         {
             var message = (string)mes;
             //string message = Encoding.GetEncoding("gb2312").GetString(buffer, 0, count);
-            if (message.StartsWith("Update"))
+            string[] mesParts = message.Split(' ');
+            if (mesParts[0] == "Update")
             {
-                string[] mesParts = message.Split(' ');
                 //var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
                 var insp = (from c in WorkItems
                             where c.Guid == mesParts[1]
@@ -238,6 +284,20 @@ namespace PMClient.ViewModel
                     insp.Deadline = Convert.ToDateTime(mesParts[5]);
                     insp.Priority = Convert.ToInt32(mesParts[6]);
                     insp.Username = mesParts[7];
+                }
+            }
+            else if (mesParts[0] == ("Token"))
+            {
+                if (mesParts[1] == "Previleged")
+                {
+                    Previleged = true;
+                }
+            }
+            else if (mesParts[0] == "Userlist")
+            {
+                for (int i = 1; i < mesParts.Count(); i += 2)
+                {
+                    UserDict[mesParts[i]] = mesParts[i + 1];
                 }
             }
         }
