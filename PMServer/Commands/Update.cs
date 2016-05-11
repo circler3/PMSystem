@@ -20,6 +20,11 @@ namespace PMServer.Commands
             if (requestInfo.Parameters[6] == "自己")
             {
                 workItem = Common.SessionDict[session.RemoteEndPoint.Address.ToString()].WorkItems.Find(w => w.Guid == x);
+                if (workItem == null)
+                {
+                    workItem = new WorkItem() { Guid = x };
+                    Common.SessionDict[session.RemoteEndPoint.Address.ToString()].WorkItems.Add(workItem);
+                }
             }
             else
             {
@@ -27,11 +32,11 @@ namespace PMServer.Commands
                             where c.Username == requestInfo.Parameters[6]
                             select c).SingleOrDefault();
                 workItem = insp.WorkItems.Find(w => w.Guid == x);
-            }
-            if (workItem == null)
-            {
-                workItem = new WorkItem() { Guid = x };
-                Common.SessionDict[session.RemoteEndPoint.Address.ToString()].WorkItems.Add(workItem);
+                if (workItem == null)
+                {
+                    workItem = new WorkItem() { Guid = x };
+                    insp.WorkItems.Add(workItem);
+                }
             }
             workItem.Name = requestInfo.Parameters[1];
             workItem.Description = requestInfo.Parameters[2];

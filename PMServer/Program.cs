@@ -114,9 +114,14 @@ namespace PMServer
             }
             else
             {
-
-                session.TrySend(string.Format("{0} {1} {2}\r\n", "Userlist", session.RemoteEndPoint.Address.ToString(), 
-                    Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username));
+                session.TrySend(string.Format("{0} {1} {2}\r\n", "Userlist", session.RemoteEndPoint.Address.ToString(),
+                     Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username));
+                foreach (var xn in Common.SessionDict[session.RemoteEndPoint.Address.ToString()].WorkItems)
+                {
+                    var mes = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\r\n", "Update", xn.Guid, xn.Name, xn.Description,
+                        xn.Percentage, xn.Deadline.ToShortDateString(), xn.Priority, Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username);
+                    session.TrySend(mes);
+                }
             }
         }
 
@@ -138,8 +143,8 @@ namespace PMServer
         public static void SendToNormal(string mes, string username)
         {
             var x = (from c in Common.SessionDict
-                    where c.Value.Username == username
-                    select c).SingleOrDefault();
+                     where c.Value.Username == username
+                     select c).SingleOrDefault();
             if (string.IsNullOrEmpty(x.Key)) return;
             if (x.Value.Session == null) return;
             x.Value.Session.TrySend(mes);
