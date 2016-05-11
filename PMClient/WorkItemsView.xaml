@@ -45,7 +45,7 @@
                 <TextBlock Text="截止日期:" VerticalAlignment="Center" Margin="5"/>
                 <DatePicker SelectedDate="{Binding Deadline}"/>
             </DockPanel>
-            <ComboBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5" IsReadOnly="True" ItemsSource="{Binding Mode=OneWay, Path=Main.UserDict, Converter={StaticResource UserValueConverter}}" DataContext="{Binding Source={StaticResource Locator}}">
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5" IsReadOnly="True" SelectedValue="{Binding Username, Mode=TwoWay}" ItemsSource="{Binding Main.UserDict, Converter={StaticResource UserValueConverter}, Source={StaticResource Locator}}">
             </ComboBox>
         </Grid>
     </StackPanel>

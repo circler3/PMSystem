@@ -94,7 +94,8 @@ namespace PMServer
                 {
                     sb.Append(item.Key);
                     sb.Append(" ");
-                    sb.Append(item.Value);
+                    sb.Append(item.Value.Username);
+                    sb.Append(" ");
                 }
                 session.TrySend(string.Format("{0} {1}\r\n", "Userlist", sb));
                 session.TrySend(string.Format("{0} {1}\r\n", "Token", "Previleged"));
@@ -132,6 +133,16 @@ namespace PMServer
                 }
                 n.Value.Session.TrySend(mes);
             }
+        }
+
+        public static void SendToNormal(string mes, string username)
+        {
+            var x = (from c in Common.SessionDict
+                    where c.Value.Username == username
+                    select c).SingleOrDefault();
+            if (string.IsNullOrEmpty(x.Key)) return;
+            if (x.Value.Session == null) return;
+            x.Value.Session.TrySend(mes);
         }
     }
 }

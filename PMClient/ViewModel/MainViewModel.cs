@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
+using OfficeOpenXml;
+using Microsoft.Win32;
 
 namespace PMClient.ViewModel
 {
@@ -107,6 +109,58 @@ namespace PMClient.ViewModel
             }
         }
 
+        private RelayCommand _exportCommand;
+
+        /// <summary>
+        /// Gets the MyCommand.
+        /// </summary>
+        public RelayCommand ExportCommand
+        {
+            get
+            {
+                return _exportCommand
+                    ?? (_exportCommand = new RelayCommand(ExportWorkItemsCommand));
+            }
+        }
+
+        private void ExportWorkItemsCommand()
+        {
+            SaveFileDialog diag = new SaveFileDialog();
+            diag.Filter = "Excel File|*.xlsx";
+            diag.ShowDialog();
+            if (string.IsNullOrEmpty(diag.FileName))
+            {
+                return;
+            }
+            else
+            {
+                using (var p = new ExcelPackage())
+                {
+                    var sheet = p.Workbook.Worksheets.Add("任务列表");
+
+                    //Cells的起始索引是1
+                    sheet.Cells[1, 1].Value = "任务标题";
+                    sheet.Cells[1, 2].Value = "任务描述";
+                    sheet.Cells[1, 3].Value = "执行人";
+                    sheet.Cells[1, 4].Value = "进度";
+                    sheet.Cells[1, 5].Value = "截止时间";
+                    int row = 1;
+                    foreach (var n in WorkItems)
+                    {
+                        row += 1;
+                        sheet.Cells[row, 1].Value = n.Name;
+                        sheet.Cells[row, 2].Value = n.Description;
+                        sheet.Cells[row, 3].Value = n.Username;
+                        sheet.Cells[row, 4].Value = n.Percentage;
+                        sheet.Cells[row, 5].Value = n.Deadline;
+                    }
+
+                    p.SaveAs(new System.IO.FileInfo(diag.FileName));
+                }
+
+            }
+        }
+
         private RelayCommand<object> _updateCommand;
 
         /// <summary>
@@ -124,7 +178,7 @@ namespace PMClient.ViewModel
         private void UpdateWorkItem(object o)
         {
             WorkItemViewModel w = (WorkItemViewModel)o;
-            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Update", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
+            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\r\n", "Update", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority, w.Username ?? "自己");
             Send(mes);
         }
 
@@ -252,6 +306,15 @@ namespace PMClient.ViewModel
         private void ProcessMessage(object mes)
         {
             var message = (string)mes;
+            string[] splitted = message.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var n in splitted)
+            {
+                ProcessMessage(n);
+            }
+        }
+
+        private void ProcessMessage(string message)
+        {
             //string message = Encoding.GetEncoding("gb2312").GetString(buffer, 0, count);
             string[] mesParts = message.Split(' ');
             if (mesParts[0] == "Update")
@@ -295,7 +358,7 @@ namespace PMClient.ViewModel
             }
             else if (mesParts[0] == "Userlist")
             {
-                for (int i = 1; i < mesParts.Count(); i += 2)
+                for (int i = 1; i < mesParts.Count() - 2; i += 2)
                 {
                     UserDict[mesParts[i]] = mesParts[i + 1];
                 }
