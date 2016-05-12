@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using OfficeOpenXml;
 using Microsoft.Win32;
+using System.Windows;
 
 namespace PMClient.ViewModel
 {
@@ -152,6 +153,7 @@ namespace PMClient.ViewModel
                         sheet.Cells[row, 2].Value = n.Description;
                         sheet.Cells[row, 3].Value = n.Username;
                         sheet.Cells[row, 4].Value = n.Percentage;
+                        sheet.Cells[row, 5].Style.Numberformat.Format = "yyyy/MM/dd";
                         sheet.Cells[row, 5].Value = n.Deadline;
                     }
 
@@ -247,7 +249,15 @@ namespace PMClient.ViewModel
             //_workItems.Add(new WorkItemViewModel() { Name = "B work item", Percentage = 40 });
 
             tcpClient = new TcpClient();
-            tcpClient.Connect(Properties.Settings.Default.ServerIP, Properties.Settings.Default.ServerPort);
+            try
+            {
+                tcpClient.Connect(Properties.Settings.Default.ServerIP, Properties.Settings.Default.ServerPort);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("服务器未启动，程序将自动退出。", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+            }
             stream = tcpClient.GetStream();
             Thread th = new Thread(new ThreadStart(ReadData));
             th.IsBackground = true;
@@ -263,6 +273,12 @@ namespace PMClient.ViewModel
             byte[] data = Encoding.GetEncoding("gb2312").GetBytes(message);
             try
             {
+                if (tcpClient.GetState() != System.Net.NetworkInformation.TcpState.Established)
+                {
+                    tcpClient.Close();
+                    tcpClient.Connect(Properties.Settings.Default.ServerIP, Properties.Settings.Default.ServerPort);
+                }
+
                 if (stream.CanWrite)
                 {
                     stream.Write(data, 0, data.Length);
@@ -272,9 +288,7 @@ namespace PMClient.ViewModel
             {
                 stream.Close();
                 tcpClient.Close();
-                tcpClient.Connect(Properties.Settings.Default.ServerIP, Properties.Settings.Default.ServerPort);
             }
-
         }
 
         private void ReadData()

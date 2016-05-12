@@ -81,6 +81,7 @@
     <Compile Include="Model\IDataService.cs" />
     <Compile Include="Model\UserlistValueConverter.cs" />
     <Compile Include="Model\WorkItem.cs" />
+    <Compile Include="TcpStateExtension.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="ViewModel\WorkItemViewModel.cs" />

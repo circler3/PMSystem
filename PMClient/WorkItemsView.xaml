@@ -28,13 +28,13 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Background="GreenYellow" CommandParameter="{Binding Mode=OneWay}" Command="{Binding DataContext.UpdateCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Content="更新" />
+                <Button Grid.Column="0" Background="GreenYellow" CommandParameter="{Binding Mode=OneWay}" Command="{Binding DataContext.UpdateCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Content="更新" MinHeight="25" />
                 <Button Grid.Column="1" Background="Pink" CommandParameter="{Binding Mode=OneWay}" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Content="删除"/>
             </Grid>
         </Grid>
         <DockPanel Grid.Row="1" LastChildFill="True">
             <TextBlock DockPanel.Dock="Right" FontSize="20" VerticalAlignment="Center" Text="{Binding Percentage, StringFormat=\{0\}%}"/>
-            <Slider MinHeight="30" Maximum="100" Minimum="0" Value="{Binding Percentage}"/>
+            <Slider MinHeight="30" Maximum="100" Minimum="0" Value="{Binding Percentage}" TickFrequency="25" IsSnapToTickEnabled="True" TickPlacement="TopLeft" SmallChange="25" Foreground="#FF078B49"/>
         </DockPanel>
         <Grid>
             <Grid.ColumnDefinitions>
