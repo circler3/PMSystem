@@ -201,7 +201,7 @@ namespace PMClient.ViewModel
         private void DeleteWorkItem(object parameter)
         {
             WorkItemViewModel w = (WorkItemViewModel)parameter;
-            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
+            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6}\r\n", "Remove", w.Guid, w.Name.Replace(" ", "&nbsp;").Replace("\r\n","<br/>"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority);
             Send(mes);
             WorkItems.Remove(w);
         }
@@ -343,7 +343,7 @@ namespace PMClient.ViewModel
                     {
                         Guid = mesParts[1],
                         Name = mesParts[2].Replace("&nbsp;", " "),
-                        Description = mesParts[3].Replace("&nbsp;", " "),
+                        Description = mesParts[3].Replace("&nbsp;", " ").Replace("\r\n","<br/>"),
                         Percentage = Convert.ToInt32(mesParts[4]),
                         Deadline = Convert.ToDateTime(mesParts[5]),
                         Priority = Convert.ToInt32(mesParts[6]),
@@ -356,7 +356,7 @@ namespace PMClient.ViewModel
                 else
                 {
                     insp.Name = mesParts[2].Replace("&nbsp;", " ");
-                    insp.Description = mesParts[3].Replace("&nbsp;", " ");
+                    insp.Description = mesParts[3].Replace("&nbsp;", " ").Replace("<br/>", "\r\n");
                     insp.Percentage = Convert.ToInt32(mesParts[4]);
                     insp.Deadline = Convert.ToDateTime(mesParts[5]);
                     insp.Priority = Convert.ToInt32(mesParts[6]);

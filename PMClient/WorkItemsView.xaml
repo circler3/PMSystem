@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="6*"/>
             </Grid.ColumnDefinitions>
             <TextBox  Text="{Binding Name}" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" BorderBrush="{x:Null}" FontFamily="SimSun" FontWeight="Bold" FontSize="20"/>
-            <TextBox Margin="3" Text="{Binding Description}" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" BorderBrush="{x:Null}"/>
+            <TextBox Margin="3" AcceptsReturn="True" Text="{Binding Description}" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" BorderBrush="{x:Null}"/>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -45,7 +45,7 @@
                 <TextBlock Text="截止日期:" VerticalAlignment="Center" Margin="5"/>
                 <DatePicker SelectedDate="{Binding Deadline}"/>
             </DockPanel>
-            <ComboBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5" IsReadOnly="True" SelectedValue="{Binding Username, Mode=TwoWay}" ItemsSource="{Binding Main.UserDict, Converter={StaticResource UserValueConverter}, Source={StaticResource Locator}}">
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Background="AliceBlue" Margin="5" IsReadOnly="True" SelectedValue="{Binding Username, Mode=TwoWay}" ItemsSource="{Binding Main.UserDict, Converter={StaticResource UserValueConverter}, Source={StaticResource Locator}}" IsEnabled="{Binding Main.Previleged, Source={StaticResource Locator}}">
             </ComboBox>
         </Grid>
     </StackPanel>
