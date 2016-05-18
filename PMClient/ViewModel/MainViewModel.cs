@@ -180,7 +180,7 @@ namespace PMClient.ViewModel
         private void UpdateWorkItem(object o)
         {
             WorkItemViewModel w = (WorkItemViewModel)o;
-            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\r\n", "Update", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority, w.Username ?? "自己");
+            var mes = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\r\n", "Update", w.Guid, w.Name.Replace(" ", "&nbsp;"), w.Description.Replace(" ", "&nbsp;").Replace("\r\n", "<br/>"), w.Percentage, w.Deadline.ToShortDateString(), w.Priority, w.Username ?? "自己");
             Send(mes);
         }
 
@@ -343,11 +343,12 @@ namespace PMClient.ViewModel
                     {
                         Guid = mesParts[1],
                         Name = mesParts[2].Replace("&nbsp;", " "),
-                        Description = mesParts[3].Replace("&nbsp;", " ").Replace("\r\n","<br/>"),
+                        Description = mesParts[3].Replace("&nbsp;", " ").Replace("<br/>","\r\n"),
                         Percentage = Convert.ToInt32(mesParts[4]),
                         Deadline = Convert.ToDateTime(mesParts[5]),
                         Priority = Convert.ToInt32(mesParts[6]),
-                        Username = mesParts[7]
+                        //mesPart[7] is often "自己"
+                        Username = mesParts[mesParts.Length - 1]
                     };
                     //App.Current.MainWindow.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background,
                     //new ParameterizedThreadStart((x) => WorkItems.Add(x as WorkItemViewModel)), item);
@@ -360,7 +361,8 @@ namespace PMClient.ViewModel
                     insp.Percentage = Convert.ToInt32(mesParts[4]);
                     insp.Deadline = Convert.ToDateTime(mesParts[5]);
                     insp.Priority = Convert.ToInt32(mesParts[6]);
-                    insp.Username = mesParts[7];
+                    //mesPart[7] is often "自己"
+                    insp.Username = mesParts[mesParts.Length - 1];
                 }
             }
             else if (mesParts[0] == ("Token"))

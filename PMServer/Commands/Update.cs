@@ -48,7 +48,7 @@ namespace PMServer.Commands
             {
                 Program.SendToNormal(requestInfo.Key + " " + requestInfo.Body + " " + requestInfo.Parameters[6], requestInfo.Parameters[6]);
             }
-            Program.SendToPrevileged(requestInfo.Key + " " + requestInfo.Body + " " + requestInfo.Parameters[6]);
+            Program.SendToPrevileged(requestInfo.Key + " " + requestInfo.Body + " " + Common.SessionDict[session.RemoteEndPoint.Address.ToString()].Username);
         }
     }
 }
